@@ -88,7 +88,7 @@ cc_library_static {
     min_sdk_version: "29",
 
     srcs: [
-        "FFMPEGSoftCodec.cpp",
+        "FFMPEGUtil.cpp",
         "HevcUtils.cpp",
         "MediaSource.cpp",
         "Utils.cpp",
@@ -97,9 +97,6 @@ cc_library_static {
     shared_libs: [
         "aconfig_libgui_flags_c_lib",
         "liblog",
-        "libstagefright_omx_utils",
-        "android.hidl.allocator@1.0",
-        "android.hidl.memory@1.0",
     ],
 
     static_libs: [
@@ -254,6 +251,7 @@ cc_library {
         "CodecTrace.cpp",
         "CryptoAsync.cpp",
         "FFMPEGSoftCodec.cpp",
+        "FFMPEGUtil.cpp",
         "FrameDecoder.cpp",
         "HevcUtils.cpp",
         "InterfaceUtils.cpp",
