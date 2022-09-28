@@ -308,6 +308,9 @@ enum C2ParamIndexKind : C2Param::type_index_t {
 
     // display processing token
     kParamIndexDisplayProcessingToken, // int64_t
+
+    // FFMPEG
+    kParamIndexRawCodecData,
 };
 
 }
@@ -2935,6 +2938,11 @@ constexpr char C2_PARAMKEY_DISPLAY_PROCESSING_TOKEN[] = "display-processing-toke
 typedef C2StreamParam<C2Info, C2SimpleValueStruct<int32_t>, kParamIndexAverageBlockQuantization>
         C2AndroidStreamAverageBlockQuantizationInfo;
 constexpr char C2_PARAMKEY_AVERAGE_QP[] = "coded.average-qp";
+
+// FFMEG
+
+typedef C2StreamParam<C2Info, C2BlobValue, kParamIndexRawCodecData> C2StreamRawCodecDataInfo;
+constexpr char C2_PARAMKEY_RAW_CODEC_DATA[] = "coded.raw-codec-data";
 
 /// @}
 
