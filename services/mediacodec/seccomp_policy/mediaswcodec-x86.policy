@@ -71,6 +71,7 @@ sched_yield: 1
 # Required by mesa3d
 kcmp: 1
 sched_getaffinity: 1
+sysinfo: 1
 
 # The mmap2/mprotect/prctl rules in this file are less restrictive than the rules
 # in the crash_dump policy file. Therefore, include a version of the crash_dump
