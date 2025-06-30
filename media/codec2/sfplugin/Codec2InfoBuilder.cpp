@@ -311,6 +311,7 @@ void addSupportedColorFormats(
         addDefaultColorFormat(COLOR_FormatYUV420SemiPlanar);
         addDefaultColorFormat(COLOR_FormatYUV420PackedPlanar);
         addDefaultColorFormat(COLOR_FormatYUV420PackedSemiPlanar);
+        addDefaultColorFormat(COLOR_FormatRGBAFlexible);
         // Android video codecs prefer CPU-readable formats
         if (trait.name.find("android") != std::string::npos) {
             addDefaultColorFormat(COLOR_FormatSurface);
@@ -746,6 +747,8 @@ status_t Codec2InfoBuilder::buildMediaCodecList(MediaCodecListWriter* writer) {
                     pixelFormatMap[HAL_PIXEL_FORMAT_YCBCR_P010]    = COLOR_FormatYUVP010;
                     pixelFormatMap[HAL_PIXEL_FORMAT_RGBA_1010102]  = COLOR_Format32bitABGR2101010;
                     pixelFormatMap[HAL_PIXEL_FORMAT_RGBA_FP16]     = COLOR_Format64bitABGRFloat;
+                    pixelFormatMap[HAL_PIXEL_FORMAT_RGBA_8888]     = COLOR_FormatRGBAFlexible;
+                    pixelFormatMap[HAL_PIXEL_FORMAT_RGBX_8888]     = COLOR_FormatRGBAFlexible;
                     pixelFormatMap[AHARDWAREBUFFER_FORMAT_YCbCr_P210]    = COLOR_FormatYUVP210;
 
                     std::shared_ptr<C2StoreFlexiblePixelFormatDescriptorsInfo> pixelFormatInfo;
