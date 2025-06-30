@@ -489,6 +489,9 @@ static c2_status_t PopulatePlaneLayout(
             case DRM_FORMAT_ABGR8888:
                  format = static_cast<uint32_t>(PixelFormat4::RGBA_8888);
                  break;
+            case DRM_FORMAT_RGB565:
+                 format = static_cast<uint32_t>(PixelFormat4::RGB_565);
+                 break;
             default:
                  break;
         }
@@ -626,6 +629,72 @@ static c2_status_t PopulatePlaneLayout(
                 C2PlaneInfo::NATIVE,            // endianness
                 C2PlanarLayout::PLANE_R,        // rootIx
                 2,                              // offset
+            };
+            break;
+        }
+        case static_cast<uint32_t>(PixelFormat4::RGB_565): {
+            void *pointer = nullptr;
+            // TODO: fence (still applicable for any buffer lock)
+            status_t err = GraphicBufferMapper::get().lock(
+                    const_cast<native_handle_t*>(buffer), grallocUsage, rect, &pointer);
+            if (err) {
+                ALOGE("failed transaction: lock(RGB_565)");
+                return C2_CORRUPTED;
+            }
+
+            // For packed formats, all planes typically point to the same root pointer.
+            // The individual bit depths and offsets will define how to extract them.
+            addr[C2PlanarLayout::PLANE_R] = (uint8_t *)pointer;
+            addr[C2PlanarLayout::PLANE_G] = (uint8_t *)pointer;
+            addr[C2PlanarLayout::PLANE_B] = (uint8_t *)pointer;
+
+            layout->type = C2PlanarLayout::TYPE_RGB; // Still an RGB type
+            layout->numPlanes = 3; // Still R, G, B logical planes
+            layout->rootPlanes = 1; // All derived from one root memory block
+
+            // --- Plane R (Red) ---
+            layout->planes[C2PlanarLayout::PLANE_R] = {
+                C2PlaneInfo::CHANNEL_R,         // channel
+                2,                              // colInc: 2 bytes per pixel
+                static_cast<int32_t>(2 * stride), // rowInc: 2 bytes * stride pixels
+                1,                              // mColSampling: 1:1
+                1,                              // mRowSampling: 1:1
+                16,                             // allocatedDepth: Entire 16-bit word is relevant
+                5,                              // bitDepth: 5 bits for Red
+                11,                             // rightShift: To get R (MSB), shift right by 11 (6 for G + 5 for B)
+                C2PlaneInfo::NATIVE,            // endianness
+                C2PlanarLayout::PLANE_R,        // rootIx: All share the same root
+                0,                              // offset: Offset 0 from the root pointer for the 16-bit word
+            };
+
+            // --- Plane G (Green) ---
+            layout->planes[C2PlanarLayout::PLANE_G] = {
+                C2PlaneInfo::CHANNEL_G,         // channel
+                2,                              // colInc: 2 bytes per pixel
+                static_cast<int32_t>(2 * stride), // rowInc: 2 bytes * stride pixels
+                1,                              // mColSampling: 1:1
+                1,                              // mRowSampling: 1:1
+                16,                             // allocatedDepth: Entire 16-bit word is relevant
+                6,                              // bitDepth: 6 bits for Green
+                5,                              // rightShift: To get G, shift right by 5 (for B)
+                C2PlaneInfo::NATIVE,            // endianness
+                C2PlanarLayout::PLANE_R,        // rootIx: All share the same root
+                0,                              // offset: Offset 0 from the root pointer for the 16-bit word
+            };
+
+            // --- Plane B (Blue) ---
+            layout->planes[C2PlanarLayout::PLANE_B] = {
+                C2PlaneInfo::CHANNEL_B,         // channel
+                2,                              // colInc: 2 bytes per pixel
+                static_cast<int32_t>(2 * stride), // rowInc: 2 bytes * stride pixels
+                1,                              // mColSampling: 1:1
+                1,                              // mRowSampling: 1:1
+                16,                             // allocatedDepth: Entire 16-bit word is relevant
+                5,                              // bitDepth: 5 bits for Blue
+                0,                              // rightShift: Blue is the LSB, no shift needed for it
+                C2PlaneInfo::NATIVE,            // endianness
+                C2PlanarLayout::PLANE_R,        // rootIx: All share the same root
+                0,                              // offset: Offset 0 from the root pointer for the 16-bit word
             };
             break;
         }

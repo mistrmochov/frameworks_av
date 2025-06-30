@@ -1087,6 +1087,7 @@ GraphicView2MediaImageConverter::GraphicView2MediaImageConverter(
             switch (mClientColorFormat) {
                 case COLOR_FormatSurface:
                 case COLOR_FormatRGBFlexible:
+                case COLOR_Format16bitRGB565:
                 case COLOR_Format24bitBGR888:
                 case COLOR_Format24bitRGB888:
                     ALOGD("Converter: accept color format "
@@ -1112,6 +1113,7 @@ GraphicView2MediaImageConverter::GraphicView2MediaImageConverter(
             switch (mClientColorFormat) {
                 case COLOR_FormatSurface:
                 case COLOR_FormatRGBAFlexible:
+                case COLOR_Format16bitRGB565:
                 case COLOR_Format32bitABGR8888:
                 case COLOR_Format32bitARGB8888:
                 case COLOR_Format32bitBGRA8888:
