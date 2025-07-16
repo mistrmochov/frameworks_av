@@ -554,6 +554,7 @@ ALookup<uint32_t, int32_t> sPixelFormats = {
     { HAL_PIXEL_FORMAT_YCBCR_P010,             COLOR_FormatYUVP010 },
     { HAL_PIXEL_FORMAT_RGBA_1010102,           COLOR_Format32bitABGR2101010 },
     { HAL_PIXEL_FORMAT_RGBA_FP16,              COLOR_Format64bitABGRFloat },
+    { HAL_PIXEL_FORMAT_BGRA_8888,              COLOR_FormatRGBAFlexible },
     { HAL_PIXEL_FORMAT_RGBA_8888,              COLOR_FormatRGBAFlexible },
     { HAL_PIXEL_FORMAT_RGBX_8888,              COLOR_FormatRGBAFlexible },
     { HAL_PIXEL_FORMAT_RGB_565,                COLOR_Format16bitRGB565 },

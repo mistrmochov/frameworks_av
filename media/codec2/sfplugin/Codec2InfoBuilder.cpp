@@ -748,6 +748,7 @@ status_t Codec2InfoBuilder::buildMediaCodecList(MediaCodecListWriter* writer) {
                     pixelFormatMap[HAL_PIXEL_FORMAT_YCBCR_P010]    = COLOR_FormatYUVP010;
                     pixelFormatMap[HAL_PIXEL_FORMAT_RGBA_1010102]  = COLOR_Format32bitABGR2101010;
                     pixelFormatMap[HAL_PIXEL_FORMAT_RGBA_FP16]     = COLOR_Format64bitABGRFloat;
+                    pixelFormatMap[HAL_PIXEL_FORMAT_BGRA_8888]     = COLOR_FormatRGBAFlexible;
                     pixelFormatMap[HAL_PIXEL_FORMAT_RGBA_8888]     = COLOR_FormatRGBAFlexible;
                     pixelFormatMap[HAL_PIXEL_FORMAT_RGBX_8888]     = COLOR_FormatRGBAFlexible;
                     pixelFormatMap[HAL_PIXEL_FORMAT_RGB_565]       = COLOR_Format16bitRGB565;

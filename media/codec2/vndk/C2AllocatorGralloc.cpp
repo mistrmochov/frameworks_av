@@ -483,6 +483,9 @@ static c2_status_t PopulatePlaneLayout(
     if (format == HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED &&
         !GraphicBufferMapper::get().getPixelFormatFourCC(buffer, &fourCc)) {
         switch (fourCc)  {
+            case DRM_FORMAT_ARGB8888:
+                 format = static_cast<uint32_t>(PixelFormat4::BGRA_8888);
+                 break;
             case DRM_FORMAT_XBGR8888:
                  format = static_cast<uint32_t>(PixelFormat4::RGBX_8888);
                  break;
@@ -697,6 +700,72 @@ static c2_status_t PopulatePlaneLayout(
                 0,                              // offset: Offset 0 from the root pointer for the 16-bit word
             };
             break;
+        }
+        case static_cast<uint32_t>(PixelFormat4::BGRA_8888): {
+            void *pointer = nullptr;
+            // TODO: fence (still applicable)
+            status_t err = GraphicBufferMapper::get().lock(
+                    const_cast<native_handle_t*>(buffer), grallocUsage, rect, &pointer);
+            if (err) {
+                ALOGE("failed transaction: lock(BGRA_8888)");
+                return C2_CORRUPTED;
+            }
+            
+            // For BGRA_8888, we have B, G, R, and A components, each 1 byte apart
+            addr[C2PlanarLayout::PLANE_B] = (uint8_t *)pointer;       // Blue is at offset 0
+            addr[C2PlanarLayout::PLANE_G] = (uint8_t *)pointer + 1;   // Green is at offset 1
+            addr[C2PlanarLayout::PLANE_R] = (uint8_t *)pointer + 2;   // Red is at offset 2
+
+            layout->type = C2PlanarLayout::TYPE_RGB; // It's still an RGBA type, just different order
+            layout->numPlanes = 3; // 4 planes: B, G, R
+            layout->rootPlanes = 1;
+
+            // --- Plane B (Blue) ---
+            layout->planes[C2PlanarLayout::PLANE_B] = {
+                C2PlaneInfo::CHANNEL_B,         // channel
+                4,                              // colInc: 4 bytes per pixel (B, G, R, A)
+                static_cast<int32_t>(4 * stride), // rowInc: 4 bytes * stride pixels
+                1,                              // mColSampling
+                1,                              // mRowSampling
+                8,                              // allocatedDepth
+                8,                              // bitDepth
+                0,                              // rightShift
+                C2PlaneInfo::NATIVE,            // endianness
+                C2PlanarLayout::PLANE_R,        // rootIx (still part of the same interleaved block)
+                0,                              // offset: 0 bytes from pixel start (Blue is first)
+            };
+
+            // --- Plane G (Green) ---
+            layout->planes[C2PlanarLayout::PLANE_G] = {
+                C2PlaneInfo::CHANNEL_G,         // channel
+                4,                              // colInc
+                static_cast<int32_t>(4 * stride), // rowInc
+                1,                              // mColSampling
+                1,                              // mRowSampling
+                8,                              // allocatedDepth
+                8,                              // bitDepth
+                0,                              // rightShift
+                C2PlaneInfo::NATIVE,            // endianness
+                C2PlanarLayout::PLANE_R,        // rootIx
+                1,                              // offset: 1 byte from pixel start (Green is second)
+            };
+
+            // --- Plane R (Red) ---
+            layout->planes[C2PlanarLayout::PLANE_R] = {
+                C2PlaneInfo::CHANNEL_R,         // channel
+                4,                              // colInc
+                static_cast<int32_t>(4 * stride), // rowInc
+                1,                              // mColSampling
+                1,                              // mRowSampling
+                8,                              // allocatedDepth
+                8,                              // bitDepth
+                0,                              // rightShift
+                C2PlaneInfo::NATIVE,            // endianness
+                C2PlanarLayout::PLANE_R,        // rootIx
+                2,                              // offset: 2 bytes from pixel start (Red is third)
+            };
+            
+            break; 
         }
 
         case static_cast<uint32_t>(PixelFormat4::BLOB): {
