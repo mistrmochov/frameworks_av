@@ -566,7 +566,7 @@ status_t Codec2InfoBuilder::buildMediaCodecList(MediaCodecListWriter* writer) {
             // TODO: Remove this block once all codecs are enabled by default.
             switch (option) {
             case 0:
-                continue;
+                break;
             case 1:
                 if (hasPrefix(canonName, "c2.vda.")) {
                     break;
