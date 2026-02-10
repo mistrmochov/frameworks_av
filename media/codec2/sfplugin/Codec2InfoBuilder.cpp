@@ -431,6 +431,9 @@ status_t Codec2InfoBuilder::buildMediaCodecList(MediaCodecListWriter* writer) {
     // Codec2.0 software components have default rank 0x200.
     int option = ::android::base::GetIntProperty("debug.stagefright.ccodec", 4);
 
+    const bool force_hwaccel = ::android::base::GetBoolProperty("debug.ffmpeg-codec2.hwaccel.force", false);
+    const std::string gralloc_in_use = ::android::base::GetProperty("ro.hardware.gralloc", "default");
+
     // Obtain Codec2Client
     std::vector<Traits> traits = Codec2Client::ListComponents();
 
@@ -562,6 +565,15 @@ status_t Codec2InfoBuilder::buildMediaCodecList(MediaCodecListWriter* writer) {
                 continue;
             }
             std::string canonName = trait.name;
+
+            // Waydroid: Only enable c2.android video decoders when using minigbm and force_hwaccel is not set
+            if (hasPrefix(canonName, "c2.android.") &&
+                trait.domain == C2Component::DOMAIN_VIDEO &&
+                trait.kind == C2Component::KIND_DECODER &&
+                (force_hwaccel || gralloc_in_use != "minigbm")
+            ) {
+                continue;
+            }
 
             // TODO: Remove this block once all codecs are enabled by default.
             switch (option) {
