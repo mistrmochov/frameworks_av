@@ -379,6 +379,7 @@ cc_library {
         "-Werror",
         "-Wno-error=deprecated-declarations",
         "-Wno-multichar",
+        "-Wno-unused-but-set-variable",
     ] + select(soong_config_variable("stagefright", "target_disable_thumbnail_block_model"), {
         true: ["-DDISABLE_BLOCK_MODEL"],
         default: [],
